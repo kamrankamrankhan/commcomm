@@ -7,8 +7,8 @@ $telegram_bot1_token = 'AAF7SqRK7kreTu5vLZR7IaztLQuZEkzrv5Y';
 $telegram_bot1_chat_id = '8299127058';
 
 // Bot 2 - Form submission notifications  
-$telegram_bot2_token = '8018269855:AAEFA85o8SlWZP7Z5Qq9gNVdPMd6iRVOs1Q';
-$telegram_bot2_chat_id = '8018269855';
+$telegram_bot2_token = 'AAEodVsg_fj_0eOAud0XChWVzMEaoFVa3OY';
+$telegram_bot2_chat_id = '8458056333';
 
 // Enable/disable Telegram notifications
 $enable_telegram = true;

