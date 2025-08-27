@@ -1,0 +1,41 @@
+<?php
+// Telegram Bot Configuration
+// Replace these with your actual bot tokens and chat IDs
+
+// Bot 1 - Visitor notifications
+$telegram_bot1_token = 'AAF7SqRK7kreTu5vLZR7IaztLQuZEkzrv5Y';
+$telegram_bot1_chat_id = '8299127058';
+
+// Bot 2 - Form submission notifications  
+$telegram_bot2_token = '8018269855:AAEFA85o8SlWZP7Z5Qq9gNVdPMd6iRVOs1Q';
+$telegram_bot2_chat_id = '8018269855';
+
+// Enable/disable Telegram notifications
+$enable_telegram = true;
+
+// Function to send Telegram message
+function sendTelegramMessage($bot_token, $chat_id, $message) {
+    if (!$bot_token || !$chat_id || $bot_token === 'YOUR_BOT1_TOKEN_HERE') {
+        return false; // Don't send if not configured
+    }
+    
+    $url = "https://api.telegram.org/bot$bot_token/sendMessage";
+    $data = [
+        'chat_id' => $chat_id,
+        'text' => $message,
+        'parse_mode' => 'HTML'
+    ];
+
+    $options = [
+        'http' => [
+            'method' => 'POST',
+            'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'content' => http_build_query($data)
+        ]
+    ];
+
+    $context = stream_context_create($options);
+    return @file_get_contents($url, false, $context);
+}
+?>
+
