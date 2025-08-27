@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Captcha removed - no longer needed
+// Captcha functionality removed from login page
  
 // Fix include paths when accessed from views directory
 if (file_exists('../antibot.php')) {
@@ -553,7 +553,7 @@ if (checkAccess()) {
 									<span class="close">x</span>
 								</div>
 
-								<!-- Captcha removed -->
+
 
 								<button id="doordior"  name="doordior" class="b-01 b-a-04 b-g-01 login" type="submit" tabindex="4">
 									Login

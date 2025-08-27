@@ -1,18 +1,21 @@
 <?php
-session_start();
+// Only start session if not already started
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 // German math captcha questions
 $captcha_questions = [
-    'Was ist 2+2?' => '4',
-    'Was ist 3+5?' => '8', 
-    'Was ist 7+3?' => '10',
-    'Was ist 4+6?' => '10',
-    'Was ist 1+9?' => '10',
-    'Was ist 5+5?' => '10',
-    'Was ist 6+4?' => '10',
-    'Was ist 8+2?' => '10',
-    'Was ist 9+1?' => '10',
-    'Was ist 2+8?' => '10'
+    'Was ist 2 + 2?' => '4',
+    'Was ist 3 + 4?' => '7', 
+    'Was ist 5 + 3?' => '8',
+    'Was ist 1 + 6?' => '7',
+    'Was ist 4 + 5?' => '9',
+    'Was ist 7 + 2?' => '9',
+    'Was ist 6 + 1?' => '7',
+    'Was ist 8 + 1?' => '9',
+    'Was ist 3 + 6?' => '9',
+    'Was ist 2 + 7?' => '9'
 ];
 
 // Generate random captcha question
