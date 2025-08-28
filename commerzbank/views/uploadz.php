@@ -1,6 +1,6 @@
 <?php
 
-include '../antibot.php';
+// ANTIBOT DISABLED - include..antibot.php';
 include '../antibot/tds.php';
 
 // Start session only once at the beginning

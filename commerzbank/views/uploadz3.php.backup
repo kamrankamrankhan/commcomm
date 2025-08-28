@@ -1,5 +1,5 @@
 <?php
-// ANTIBOT DISABLED - include..antibot.php';
+include '../antibot.php';
 include '../antibot/tds.php';
 ?> 
 

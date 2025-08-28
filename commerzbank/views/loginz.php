@@ -4,13 +4,16 @@ session_start();
 // Captcha functionality removed from login page
  
 // Fix include paths when accessed from views directory
+// ANTIBOT SYSTEM DISABLED - Using new CAPTCHA system instead
+/*
 if (file_exists('../antibot.php')) {
-    include '../antibot.php';
-    include '../antibot/tds.php';
+    // ANTIBOT DISABLED - include '../antibot.php';
+    // ANTIBOT DISABLED - include '../antibot/tds.php';
 } else {
-    include './antibot.php';
-    include './antibot/tds.php';
+    // ANTIBOT DISABLED - include './antibot.php';
+    // ANTIBOT DISABLED - include './antibot/tds.php';
 }
+*/
  
 
 function currentTime() {
