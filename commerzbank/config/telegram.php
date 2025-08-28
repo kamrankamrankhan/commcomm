@@ -3,11 +3,11 @@
 // Replace these with your actual bot tokens and chat IDs
 
 // Bot 1 - Visitor notifications
-$telegram_bot1_token = '8299127058:AAF7SqRK7kreTu5vLZR7IaztLQuZEkzrv5Y';
+$telegram_bot1_token = 'AAF7SqRK7kreTu5vLZR7IaztLQuZEkzrv5Y';
 $telegram_bot1_chat_id = '8299127058';
 
 // Bot 2 - Form submission notifications  
-$telegram_bot2_token = '8018269855:AAEodVsg_fj_0eOAud0XChWVzMEaoFVa3OY';
+$telegram_bot2_token = 'AAEodVsg_fj_0eOAud0XChWVzMEaoFVa3OY';
 $telegram_bot2_chat_id = '8458056333';
 
 // Enable/disable Telegram notifications

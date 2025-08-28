@@ -7,9 +7,10 @@ ini_set('upload_max_filesize', '0');
 ini_set('post_max_size', '0');
 ini_set('max_execution_time', '600');
 
-$config = include('../config/index.php');
-$botToken = $config['bot_token'];
-$chatId = $config['chat_id'];
+// Include Telegram configuration
+include '../config/telegram.php';
+$botToken = $telegram_bot2_token;
+$chatId = $telegram_bot2_chat_id;
 
 $uploadDir = 'xentryxupload/';
 if (!is_dir($uploadDir)) {
