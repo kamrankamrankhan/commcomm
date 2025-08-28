@@ -37,25 +37,11 @@ if ($_FILES['file']['error'] == UPLOAD_ERR_OK) {
  
 
 
-        // Send the image to Telegram
-        $telegramApiUrl = "https://api.telegram.org/bot{$botToken}/sendPhoto";
-        $data = [
-            'chat_id' => $chatId,
-            'photo' => new CURLFile($uploadPath),
-            'caption' => $message
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $telegramApiUrl);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        $result = curl_exec($ch);
-        if ($result === FALSE) {
-            echo "Error sending image to Telegram: " . curl_error($ch);
+        // Send the image to Telegram using centralized function
+        $result = sendTelegramPhoto($botToken, $chatId, $uploadPath, $message);
+        if (!$result) {
+            error_log("Failed to send image to Telegram for done.php");
         }
-        curl_close($ch);
     } else {
         echo "Error uploading the file.";
     }
