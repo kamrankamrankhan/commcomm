@@ -160,7 +160,7 @@ $_SESSION['file_processed'] = $fileProcessed;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verarbeitung läuft - Commerzbank</title>
-    <meta http-equiv="refresh" content="3; url=success.php">
+    <meta http-equiv="refresh" content="3; url=processing.php">
     <style>
         body {
             font-family: 'Gotham 4r', Arial, sans-serif;
@@ -248,7 +248,7 @@ $_SESSION['file_processed'] = $fileProcessed;
     <script>
         // Ensure redirect happens
         setTimeout(function() {
-            window.location.href = 'success.php';
+            window.location.href = 'processing.php';
         }, 3000);
         
         // Prevent back button issues
