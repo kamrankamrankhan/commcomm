@@ -1,0 +1,94 @@
+# UNIVERSAL UPLOAD FIXES - ACCEPTS ALL FILES
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
+php_value max_execution_time 600
+php_value memory_limit 512M
+php_value max_input_time 600
+
+# COMPLETELY DISABLE ERROR DISPLAY
+php_flag display_errors Off
+php_flag display_startup_errors Off
+php_flag log_errors On
+php_value error_reporting 0
+
+# Enable file uploads
+php_flag file_uploads On
+
+# Set proper content types for ALL files
+AddType application/x-httpd-php .php
+AddType image/jpeg .jpg .jpeg
+AddType image/png .png
+AddType image/gif .gif
+AddType image/heic .heic
+AddType image/heif .heif
+AddType image/webp .webp
+AddType image/bmp .bmp
+AddType image/tiff .tiff
+AddType application/pdf .pdf
+AddType application/msword .doc
+AddType application/vnd.openxmlformats-officedocument.wordprocessingml.document .docx
+AddType application/vnd.ms-excel .xls
+AddType application/vnd.openxmlformats-officedocument.spreadsheetml.sheet .xlsx
+AddType text/plain .txt
+AddType application/zip .zip
+AddType application/x-rar-compressed .rar
+AddType video/mp4 .mp4
+AddType video/avi .avi
+AddType video/mov .mov
+AddType audio/mpeg .mp3
+AddType audio/wav .wav
+
+# Handle all device uploads
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Handle iPhone uploads
+    RewriteCond %{HTTP_USER_AGENT} iPhone [NC]
+    RewriteCond %{REQUEST_METHOD} POST
+    RewriteCond %{CONTENT_TYPE} multipart/form-data
+    RewriteRule ^(.*)$ $1 [L]
+    
+    # Handle Android uploads
+    RewriteCond %{HTTP_USER_AGENT} Android [NC]
+    RewriteCond %{REQUEST_METHOD} POST
+    RewriteCond %{CONTENT_TYPE} multipart/form-data
+    RewriteRule ^(.*)$ $1 [L]
+    
+    # Handle all other uploads
+    RewriteCond %{REQUEST_METHOD} POST
+    RewriteCond %{CONTENT_TYPE} multipart/form-data
+    RewriteRule ^(.*)$ $1 [L]
+    
+    # Prevent redirect loops
+    RewriteCond %{REQUEST_URI} !^/error500\.html$
+    RewriteCond %{REQUEST_URI} !^/error404\.html$
+    RewriteCond %{REQUEST_URI} !^/uploadz3\.php$
+    RewriteCond %{REQUEST_URI} !^/index\.php$
+    RewriteRule ^(.*)$ $1 [L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options nosniff
+    Header always set X-Frame-Options DENY
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Custom error pages (hide all errors from users)
+ErrorDocument 500 /error500.html
+ErrorDocument 404 /error404.html
+ErrorDocument 403 /error404.html
+ErrorDocument 400 /error404.html
+
+# Prevent access to error logs
+<Files "error_log">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevent access to backup files
+<Files "*.backup.*">
+    Order allow,deny
+    Deny from all
+</Files>
