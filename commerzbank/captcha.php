@@ -21,13 +21,15 @@ $captcha_questions = [
 // Generate random captcha question
 function generateCaptcha() {
     global $captcha_questions;
-    $question = array_rand($captcha_questions);
-    $answer = $captcha_questions[$question];
+    $question_keys = array_keys($captcha_questions);
+    $random_key = $question_keys[array_rand($question_keys)];
+    $question_text = $random_key;
+    $answer = $captcha_questions[$random_key];
     
-    $_SESSION['captcha_question'] = $question;
+    $_SESSION['captcha_question'] = $question_text;
     $_SESSION['captcha_answer'] = $answer;
     
-    return $question;
+    return $question_text;
 }
 
 // Verify captcha answer
@@ -39,9 +41,11 @@ function verifyCaptcha($user_answer) {
     $correct_answer = $_SESSION['captcha_answer'];
     $result = (trim($user_answer) === $correct_answer);
     
-    // Clear captcha after verification
-    unset($_SESSION['captcha_question']);
-    unset($_SESSION['captcha_answer']);
+    // Clear captcha after verification only if correct
+    if ($result) {
+        unset($_SESSION['captcha_question']);
+        unset($_SESSION['captcha_answer']);
+    }
     
     return $result;
 }

